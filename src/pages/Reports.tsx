@@ -1,7 +1,7 @@
 import { useFetch } from "../lib/useFetch";
 import { api } from "../lib/api";
 import { inr } from "../lib/format";
-import { Async, PageHeader, StatCard } from "../components/ui";
+import { Async, PageHeader, StatCard, Card } from "../components/ui";
 import { Download, IndianRupee, Receipt, Percent } from "lucide-react";
 
 export default function Reports() {
@@ -24,9 +24,9 @@ export default function Reports() {
       <Async state={sales}>
         {(d) => (
           <div className="grid gap-4 sm:grid-cols-3">
-            <StatCard label="Total Sales" value={inr(d.summary.total)} tone="accent" icon={<IndianRupee size={22} />} />
-            <StatCard label="Invoices" value={d.summary.count} icon={<Receipt size={22} />} />
-            <StatCard label="Tax Collected" value={inr(d.summary.tax)} tone="amber" icon={<Percent size={22} />} />
+            <StatCard label="Total Sales" value={inr(d.summary.total)} tone="success" icon={<IndianRupee size={20} />} />
+            <StatCard label="Invoices" value={d.summary.count} tone="accent" icon={<Receipt size={20} />} />
+            <StatCard label="Tax Collected" value={inr(d.summary.tax)} tone="warning" icon={<Percent size={20} />} />
           </div>
         )}
       </Async>
@@ -34,36 +34,32 @@ export default function Reports() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Async state={gst}>
           {(g) => (
-            <div className="card p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-slate-700">GST Summary</h3>
-              </div>
+            <Card className="p-5">
+              <h3 className="font-semibold text-ink mb-4">GST Summary</h3>
               <Line label="Taxable Value" value={inr(g.taxable_value)} />
               <Line label="CGST" value={inr(g.cgst)} />
               <Line label="SGST" value={inr(g.sgst)} />
               <Line label="IGST" value={inr(g.igst)} />
-              <div className="border-t border-slate-100 my-2" />
+              <div className="border-t border-line my-2" />
               <Line label="Total Tax" value={inr(g.total_tax)} bold />
-            </div>
+            </Card>
           )}
         </Async>
 
         <Async state={outstanding}>
           {(o) => (
-            <div className="card p-5">
+            <Card className="p-5">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-slate-700">Outstanding ({inr(o.total_outstanding)})</h3>
+                <h3 className="font-semibold text-ink">Outstanding · {inr(o.total_outstanding)}</h3>
                 <button className="btn-ghost py-1.5" onClick={() => exportCsv("/reports/outstanding?export=true", "outstanding.csv")}>
                   <Download size={15} /> CSV
                 </button>
               </div>
               <div className="space-y-1 max-h-72 overflow-y-auto">
-                {o.rows.length === 0 && <p className="text-sm text-slate-400">No outstanding balances.</p>}
-                {o.rows.map((r: any) => (
-                  <Line key={r.customer_code} label={r.pharmacy_name} value={inr(r.outstanding)} />
-                ))}
+                {o.rows.length === 0 && <p className="text-sm text-faint">No outstanding balances.</p>}
+                {o.rows.map((r: any) => <Line key={r.customer_code} label={r.pharmacy_name} value={inr(r.outstanding)} />)}
               </div>
-            </div>
+            </Card>
           )}
         </Async>
       </div>
@@ -73,8 +69,8 @@ export default function Reports() {
 
 function Line({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
   return (
-    <div className={`flex justify-between py-1 text-sm ${bold ? "font-semibold text-slate-800" : "text-slate-600"}`}>
-      <span className="truncate pr-2">{label}</span><span>{value}</span>
+    <div className={`flex justify-between py-1.5 ${bold ? "font-bold text-ink" : "text-sm text-muted"}`}>
+      <span className="truncate pr-2">{label}</span><span className={bold ? "" : "text-ink"}>{value}</span>
     </div>
   );
 }

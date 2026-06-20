@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Stethoscope } from "lucide-react";
+import { Stethoscope, ShieldCheck, Boxes, Receipt } from "lucide-react";
 import { useAuth } from "../lib/auth";
 import { apiError } from "../lib/api";
 
@@ -27,67 +27,80 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="min-h-screen grid lg:grid-cols-2 bg-bg">
       {/* Brand panel */}
-      <div className="hidden lg:flex flex-col justify-between bg-primary-700 text-white p-12">
-        <div className="flex items-center gap-3">
-          <div className="h-11 w-11 rounded-xl bg-white grid place-items-center text-primary-600">
+      <div className="relative hidden lg:flex flex-col justify-between p-12 overflow-hidden bg-navy-900 text-white">
+        <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-accent-500/20 blur-3xl" />
+        <div className="absolute bottom-0 -left-20 h-80 w-80 rounded-full bg-accent-600/10 blur-3xl" />
+        <div className="relative flex items-center gap-3">
+          <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-accent-400 to-accent-600 grid place-items-center shadow-glow">
             <Stethoscope size={24} />
           </div>
-          <div className="text-lg font-semibold">GT Medical Solutions</div>
+          <div className="text-lg font-bold">GT Medical Solutions</div>
         </div>
-        <div>
-          <h1 className="text-4xl font-bold leading-tight">
-            Wholesale medical<br />ordering, simplified.
+
+        <div className="relative">
+          <h1 className="text-4xl font-bold leading-tight tracking-tight">
+            Wholesale medical<br />ordering, <span className="text-accent-400">reimagined.</span>
           </h1>
-          <p className="mt-4 text-primary-100 max-w-md">
-            Browse the catalogue, place orders, track deliveries, manage credit and download
-            GST invoices — all in one secure platform for retail pharmacies.
+          <p className="mt-4 text-navy-300 max-w-md leading-relaxed">
+            The enterprise platform for pharmaceutical distributors — orders, GST invoicing,
+            credit control and FEFO inventory in one premium workspace.
           </p>
-          <div className="mt-8 flex gap-6 text-primary-100 text-sm">
-            <div><div className="text-2xl font-semibold text-white">FEFO</div>batch control</div>
-            <div><div className="text-2xl font-semibold text-white">GST</div>tax invoices</div>
-            <div><div className="text-2xl font-semibold text-white">RBAC</div>8 roles</div>
+          <div className="mt-10 grid grid-cols-3 gap-3 max-w-md">
+            <Feature icon={<Boxes size={18} />} title="FEFO" sub="batch control" />
+            <Feature icon={<Receipt size={18} />} title="GST" sub="tax invoices" />
+            <Feature icon={<ShieldCheck size={18} />} title="RBAC" sub="8 roles" />
           </div>
         </div>
-        <div className="text-primary-200 text-xs">© {new Date().getFullYear()} GT Medical Solutions</div>
+        <div className="relative text-navy-500 text-xs">© {new Date().getFullYear()} GT Medical Solutions · Enterprise Edition</div>
       </div>
 
       {/* Form panel */}
-      <div className="flex items-center justify-center p-6 bg-slate-50">
-        <form onSubmit={submit} className="card w-full max-w-md p-8">
-          <h2 className="text-xl font-semibold text-slate-800">Sign in</h2>
-          <p className="text-sm text-slate-500 mt-1">Access your GT Medical account</p>
+      <div className="flex items-center justify-center p-6">
+        <form onSubmit={submit} className="card w-full max-w-md p-8 animate-fade-up">
+          <div className="lg:hidden flex items-center gap-2 mb-6">
+            <div className="h-9 w-9 rounded-xl bg-accent-500 grid place-items-center text-white"><Stethoscope size={18} /></div>
+            <span className="font-bold text-ink">GT Medical</span>
+          </div>
+          <h2 className="text-2xl font-bold text-ink tracking-tight">Welcome back</h2>
+          <p className="text-sm text-muted mt-1">Sign in to your account to continue</p>
 
-          {error && (
-            <div className="mt-4 rounded-lg bg-rose-50 text-rose-700 text-sm px-3 py-2">{error}</div>
-          )}
+          {error && <div className="mt-5 rounded-xl bg-rose-500/10 text-rose-500 text-sm px-3.5 py-2.5">{error}</div>}
 
           <div className="mt-6 space-y-4">
             <div>
-              <label className="label">Email</label>
-              <input className="input" type="email" value={email}
-                onChange={(e) => setEmail(e.target.value)} required />
+              <label className="label">Email address</label>
+              <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div>
               <label className="label">Password</label>
-              <input className="input" type="password" value={password}
-                onChange={(e) => setPassword(e.target.value)} required />
+              <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
           </div>
 
-          <button className="btn-primary w-full mt-6" disabled={busy}>
+          <button className="btn-primary w-full mt-6 py-2.5" disabled={busy}>
             {busy ? "Signing in…" : "Sign in"}
           </button>
 
-          <p className="text-sm text-slate-500 mt-4 text-center">
-            New pharmacy? <Link to="/register" className="text-primary-600 font-medium">Register here</Link>
+          <p className="text-sm text-muted mt-5 text-center">
+            New pharmacy? <Link to="/register" className="text-accent-600 dark:text-accent-400 font-semibold">Create an account</Link>
           </p>
-          <div className="mt-4 text-[11px] text-slate-400 text-center">
-            Demo: admin@gtmedical.com / Admin@12345 &nbsp;·&nbsp; owner@citycare.com / Pharmacy@123
+          <div className="mt-5 pt-4 border-t border-line text-[11px] text-faint text-center leading-relaxed">
+            Demo · admin@gtmedical.com / Admin@12345<br />owner@citycare.com / Pharmacy@123
           </div>
         </form>
       </div>
+    </div>
+  );
+}
+
+function Feature({ icon, title, sub }: { icon: React.ReactNode; title: string; sub: string }) {
+  return (
+    <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+      <div className="text-accent-400">{icon}</div>
+      <div className="mt-2 font-bold text-white">{title}</div>
+      <div className="text-[11px] text-navy-400">{sub}</div>
     </div>
   );
 }

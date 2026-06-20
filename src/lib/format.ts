@@ -26,25 +26,37 @@ export function dateTime(value?: string | null): string {
   });
 }
 
+// Alpha backgrounds + mid-tone text read well in BOTH light and dark modes.
 const STATUS_COLORS: Record<string, string> = {
-  DRAFT: "bg-slate-100 text-slate-600",
-  PLACED: "bg-blue-100 text-blue-700",
-  APPROVED: "bg-indigo-100 text-indigo-700",
-  PACKED: "bg-amber-100 text-amber-700",
-  DISPATCHED: "bg-purple-100 text-purple-700",
-  DELIVERED: "bg-accent-100 text-accent-700",
-  CANCELLED: "bg-rose-100 text-rose-700",
-  REJECTED: "bg-rose-100 text-rose-700",
-  PENDING: "bg-amber-100 text-amber-700",
-  ACTIVE: "bg-accent-100 text-accent-700",
-  INACTIVE: "bg-slate-100 text-slate-600",
-  BLOCKED: "bg-rose-100 text-rose-700",
-  PAID: "bg-accent-100 text-accent-700",
-  PARTIALLY_PAID: "bg-amber-100 text-amber-700",
-  ISSUED: "bg-blue-100 text-blue-700",
-  SUCCESS: "bg-accent-100 text-accent-700",
+  DRAFT: "bg-slate-500/10 text-slate-500",
+  PLACED: "bg-accent-500/10 text-accent-600 dark:text-accent-400",
+  APPROVED: "bg-indigo-500/10 text-indigo-500",
+  PACKED: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  DISPATCHED: "bg-violet-500/10 text-violet-500",
+  DELIVERED: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  CANCELLED: "bg-rose-500/10 text-rose-500",
+  REJECTED: "bg-rose-500/10 text-rose-500",
+  PENDING: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  ACTIVE: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  INACTIVE: "bg-slate-500/10 text-slate-500",
+  BLOCKED: "bg-rose-500/10 text-rose-500",
+  PAID: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  PARTIALLY_PAID: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  ISSUED: "bg-accent-500/10 text-accent-600 dark:text-accent-400",
+  SUCCESS: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+};
+
+const STATUS_DOT: Record<string, string> = {
+  PLACED: "bg-accent-500", APPROVED: "bg-indigo-500", PACKED: "bg-amber-500",
+  DISPATCHED: "bg-violet-500", DELIVERED: "bg-emerald-500", CANCELLED: "bg-rose-500",
+  REJECTED: "bg-rose-500", PENDING: "bg-amber-500", ACTIVE: "bg-emerald-500",
+  BLOCKED: "bg-rose-500", PAID: "bg-emerald-500", DRAFT: "bg-slate-400",
 };
 
 export function statusColor(status: string): string {
-  return STATUS_COLORS[status] || "bg-slate-100 text-slate-600";
+  return STATUS_COLORS[status] || "bg-slate-500/10 text-slate-500";
+}
+
+export function statusDot(status: string): string {
+  return STATUS_DOT[status] || "bg-slate-400";
 }

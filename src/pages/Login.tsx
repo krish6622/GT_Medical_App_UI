@@ -73,9 +73,7 @@ export default function Login() {
 
         {/* logo top-left */}
         <div className="relative animate-fade-in">
-          <div className="inline-block rounded-2xl bg-white/95 px-3 py-2 shadow-lg">
-            <GtLogo width={140} />
-          </div>
+          <GtLogo width={180} className="drop-shadow-lg" />
         </div>
 
         {/* heading + tagline */}

@@ -21,6 +21,8 @@ export interface Product {
   generic_name?: string | null;
   description: string;
   category_id?: number | null;
+  manufacturer_id?: number | null;
+  brand_id?: number | null;
   hsn_code?: string | null;
   gst_percent: string;
   uom: string;
@@ -32,6 +34,8 @@ export interface Product {
   is_active: boolean;
   available_stock: number;
 }
+
+export interface Named { id: number; name: string; }
 
 export interface Page<T> {
   items: T[];

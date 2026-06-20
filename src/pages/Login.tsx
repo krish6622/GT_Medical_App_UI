@@ -7,6 +7,7 @@ import { useAuth } from "../lib/auth";
 import { api, apiError, tokens } from "../lib/api";
 import { WarehouseScene } from "../components/WarehouseScene";
 import { GtLogo } from "../components/GtLogo";
+import warehouseUrl from "../assets/images/warehouse.jpg";
 
 const REMEMBER_KEY = "gtm_remember_email";
 
@@ -66,7 +67,7 @@ export default function Login() {
       {/* ===================== LEFT (60%) — warehouse hero ===================== */}
       <div className="relative hidden lg:flex w-[60%] flex-col justify-between p-12 text-white overflow-hidden">
         <WarehouseScene className="absolute inset-0 h-full w-full" />
-        <img src="/pharma-warehouse.jpg" alt="" onError={(e) => (e.currentTarget.style.display = "none")}
+        <img src={warehouseUrl} alt="Pharmaceutical warehouse" onError={(e) => (e.currentTarget.style.display = "none")}
           className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0" style={{ backgroundColor: "rgba(15,23,42,0.75)" }} />
         <div className="absolute inset-0 bg-gradient-to-br from-navy-950/90 via-navy-900/50 to-navy-900/80" />

@@ -56,12 +56,22 @@ export default {
           to: { transform: "translateX(0)" },
         },
         shimmer: { "100%": { transform: "translateX(100%)" } },
+        float: {
+          "0%,100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "float-slow": {
+          "0%,100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-14px)" },
+        },
       },
       animation: {
         "fade-in": "fade-in .25s ease-out",
         "fade-up": "fade-up .35s cubic-bezier(.16,1,.3,1)",
         "scale-in": "scale-in .18s ease-out",
         "slide-in-right": "slide-in-right .28s cubic-bezier(.16,1,.3,1)",
+        float: "float 6s ease-in-out infinite",
+        "float-slow": "float-slow 8s ease-in-out infinite",
       },
     },
   },

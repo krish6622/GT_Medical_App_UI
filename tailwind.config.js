@@ -15,17 +15,23 @@ export default {
         muted: "rgb(var(--muted) / <alpha-value>)",
         faint: "rgb(var(--faint) / <alpha-value>)",
 
-        // ---- Brand (static) ----
+        // ---- Brand (static) — GT Medical navy + maroon ----
         navy: {
-          50: "#f8fafc", 100: "#f1f5f9", 200: "#e2e8f0", 300: "#cbd5e1",
-          400: "#94a3b8", 500: "#64748b", 600: "#475569", 700: "#334155",
-          800: "#1e293b", 900: "#0f172a", 950: "#020617",
+          50: "#eef2fb", 100: "#d5def5", 200: "#aebfe9", 300: "#7d97d7",
+          400: "#4d6cc0", 500: "#2a4da6", 600: "#0B2D7A", 700: "#071D5A",
+          800: "#06163f", 900: "#040e29", 950: "#020817",
         },
         accent: {
-          50: "#f0f9ff", 100: "#e0f2fe", 200: "#bae6fd", 300: "#7dd3fc",
-          400: "#38bdf8", 500: "#0ea5e9", 600: "#0284c7", 700: "#0369a1",
-          800: "#075985", 900: "#0c4a6e",
-          DEFAULT: "#0ea5e9",
+          50: "#eef2fb", 100: "#d5def5", 200: "#aebfe9", 300: "#7d97d7",
+          400: "#4d6cc0", 500: "#2a4da6", 600: "#0B2D7A", 700: "#071D5A",
+          800: "#06163f", 900: "#040e29",
+          DEFAULT: "#0B2D7A",
+        },
+        maroon: {
+          50: "#fbeaeb", 100: "#f5cccd", 200: "#e89a9d", 300: "#d96067",
+          400: "#c23740", 500: "#A61D24", 600: "#7A0E12", 700: "#5e0a0d",
+          800: "#420709", 900: "#2b0405",
+          DEFAULT: "#7A0E12",
         },
         success: { DEFAULT: "#10b981", soft: "#d1fae5", softdark: "#064e3b" },
         warning: { DEFAULT: "#f59e0b", soft: "#fef3c7", softdark: "#451a03" },
@@ -39,7 +45,8 @@ export default {
         card: "0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px -8px rgb(15 23 42 / 0.10)",
         soft: "0 2px 8px rgb(15 23 42 / 0.06)",
         pop: "0 12px 40px -12px rgb(15 23 42 / 0.25)",
-        glow: "0 0 0 1px rgb(14 165 233 / 0.15), 0 8px 24px -8px rgb(14 165 233 / 0.35)",
+        glow: "0 0 0 1px rgb(11 45 122 / 0.18), 0 8px 24px -8px rgb(11 45 122 / 0.40)",
+        "glow-maroon": "0 0 0 1px rgb(122 14 18 / 0.18), 0 8px 24px -10px rgb(122 14 18 / 0.45)",
       },
       keyframes: {
         "fade-in": { from: { opacity: "0" }, to: { opacity: "1" } },

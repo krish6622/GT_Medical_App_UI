@@ -15,6 +15,8 @@ import Payments from "./pages/Payments";
 import Reports from "./pages/Reports";
 import Audit from "./pages/Audit";
 import Settings from "./pages/Settings";
+import Users from "./pages/Users";
+import Purchase from "./pages/Purchase";
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
@@ -38,6 +40,8 @@ export default function App() {
       <Route path="/invoices" element={<Shell><Invoices /></Shell>} />
       <Route path="/customers" element={<Shell><Customers /></Shell>} />
       <Route path="/inventory" element={<Shell><Inventory /></Shell>} />
+      <Route path="/purchase" element={<Shell><Purchase /></Shell>} />
+      <Route path="/users" element={<Shell><Users /></Shell>} />
       <Route path="/payments" element={<Shell><Payments /></Shell>} />
       <Route path="/reports" element={<Shell><Reports /></Shell>} />
       <Route path="/audit" element={<Shell><Audit /></Shell>} />

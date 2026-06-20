@@ -17,7 +17,7 @@ export function StatCard({
   label: string;
   value: ReactNode;
   icon?: ReactNode;
-  tone?: "accent" | "success" | "warning" | "danger" | "navy";
+  tone?: "accent" | "success" | "warning" | "danger" | "navy" | "maroon";
   trend?: number;
   hint?: string;
 }) {
@@ -27,6 +27,7 @@ export function StatCard({
     warning: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
     danger: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
     navy: "bg-navy-500/10 text-navy-600 dark:text-navy-300",
+    maroon: "bg-maroon-500/10 text-maroon-600 dark:text-maroon-400",
   };
   const up = (trend ?? 0) >= 0;
   return (

@@ -1,7 +1,8 @@
 import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
-import { Stethoscope, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { api, apiError } from "../lib/api";
+import { GtLogo } from "../components/GtLogo";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -48,10 +49,8 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-bg py-10 px-6">
       <div className="max-w-2xl mx-auto animate-fade-up">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-accent-400 to-accent-600 grid place-items-center text-white shadow-glow">
-            <Stethoscope size={22} />
-          </div>
+        <div className="flex items-center gap-4 mb-6">
+          <GtLogo width={140} />
           <div>
             <div className="font-bold text-lg text-ink">Pharmacy Registration</div>
             <div className="text-xs text-muted">Join the GT Medical wholesale network</div>

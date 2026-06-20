@@ -2,13 +2,14 @@ import { ReactNode, useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Package, ShoppingCart, ClipboardList, Users, FileText, Wallet,
-  Boxes, BarChart3, Settings, ScrollText, Bell, Menu, X, LogOut, Stethoscope,
+  Boxes, BarChart3, Settings, ScrollText, Bell, Menu, X, LogOut,
   PanelLeftClose, PanelLeft, Sun, Moon, Search, Check,
 } from "lucide-react";
 import { useAuth } from "../lib/auth";
 import { useTheme } from "../lib/theme";
 import { api } from "../lib/api";
 import { dateTime } from "../lib/format";
+import { GtLogo } from "./GtLogo";
 
 interface NavItem { to: string; label: string; icon: ReactNode; perm?: string; customerOnly?: boolean; }
 
@@ -52,16 +53,10 @@ export function Layout({ children }: { children: ReactNode }) {
         ${collapsed ? "w-[76px]" : "w-64"}
         ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
       >
-        <div className={`h-16 flex items-center gap-3 border-b border-white/5 ${collapsed ? "justify-center px-0" : "px-5"}`}>
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-accent-400 to-accent-600 grid place-items-center text-white shadow-glow shrink-0">
-            <Stethoscope size={20} />
+        <div className={`h-16 flex items-center border-b border-white/5 ${collapsed ? "justify-center px-0" : "px-4"}`}>
+          <div className="rounded-lg bg-white/95 px-2 py-1 shadow-sm">
+            <GtLogo width={collapsed ? 48 : 150} />
           </div>
-          {!collapsed && (
-            <div className="leading-tight overflow-hidden">
-              <div className="font-bold text-white whitespace-nowrap">GT Medical</div>
-              <div className="text-[10px] uppercase tracking-wider text-navy-400">Solutions</div>
-            </div>
-          )}
         </div>
 
         <nav className="flex-1 overflow-y-auto p-3 space-y-1">

@@ -70,6 +70,17 @@
   .nav-link { @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150; }
 }
 
+/* Premium content canvas — soft brand glows in light mode, flat in dark. */
+.app-canvas { background-color: rgb(var(--bg)); }
+.app-canvas {
+  background-image:
+    radial-gradient(48rem 34rem at 100% -2%, rgba(11, 45, 122, 0.12), transparent 56%),
+    radial-gradient(42rem 34rem at 102% 102%, rgba(122, 14, 18, 0.10), transparent 56%),
+    radial-gradient(40rem 30rem at -8% 108%, rgba(11, 45, 122, 0.07), transparent 55%),
+    radial-gradient(70rem 52rem at 50% -28%, rgba(255, 255, 255, 0.85), transparent 62%);
+}
+.dark .app-canvas { background-image: none; }
+
 @layer utilities {
   .page-enter { animation: fade-up .35s cubic-bezier(.16,1,.3,1); }
   .skeleton { @apply relative overflow-hidden bg-surface rounded-lg; }

@@ -119,7 +119,7 @@ export function Layout({ children }: { children: ReactNode }) {
       {mobileOpen && <div className="fixed inset-0 bg-navy-950/50 z-30 lg:hidden" onClick={() => setMobileOpen(false)} />}
 
       {/* ===================== Main column ===================== */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 app-canvas">
         <header className="h-[72px] sticky top-0 z-30 glass !rounded-none border-x-0 border-t-0 flex items-center gap-3 px-4 lg:px-6">
           <button className="btn-icon lg:hidden" onClick={() => setMobileOpen(true)}><Menu size={20} /></button>
           <button className="btn-icon hidden lg:grid" onClick={() => setCollapsed((c) => !c)}>
@@ -191,52 +191,79 @@ function DateRangePicker() {
   );
 }
 
+interface Notif { id: number; event: string; title: string; body: string; status: string; created_at: string; }
+
+function notifIcon(event: string) {
+  if (event?.startsWith("ORDER")) return { icon: <ShoppingCart size={14} />, cls: "bg-maroon-500/10 text-maroon-500" };
+  if (event?.startsWith("PAYMENT")) return { icon: <Wallet size={14} />, cls: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" };
+  if (event === "LOW_STOCK") return { icon: <Package size={14} />, cls: "bg-amber-500/10 text-amber-600 dark:text-amber-400" };
+  return { icon: <Bell size={14} />, cls: "bg-accent-500/10 text-accent-600 dark:text-accent-400" };
+}
+
 function NotificationsBell() {
   const [open, setOpen] = useState(false);
-  const [items, setItems] = useState<any[] | null>(null);
+  const [items, setItems] = useState<Notif[] | null>(null);
 
   async function load() {
-    setOpen((v) => !v);
-    if (items == null) {
-      try {
-        const r = await api.get("/notifications");
-        setItems(r.data);
-      } catch {
-        setItems([]);
-      }
-    }
+    try { const r = await api.get<Notif[]>("/notifications"); setItems(r.data); }
+    catch { setItems([]); }
   }
+  useEffect(() => { load(); }, []);
+
+  function toggle() { const next = !open; setOpen(next); if (next) load(); }
+
+  async function markRead(n: Notif) {
+    if (n.status === "READ") return;
+    setItems((xs) => xs?.map((x) => (x.id === n.id ? { ...x, status: "READ" } : x)) ?? xs);
+    try { await api.post(`/notifications/${n.id}/read`); } catch { /* keep optimistic */ }
+  }
+  async function markAll() {
+    const ids = (items ?? []).filter((n) => n.status !== "READ").map((n) => n.id);
+    setItems((xs) => xs?.map((x) => ({ ...x, status: "READ" })) ?? xs);
+    await Promise.all(ids.map((id) => api.post(`/notifications/${id}/read`).catch(() => {})));
+  }
+
   const unread = items?.filter((n) => n.status !== "READ").length ?? 0;
 
   return (
     <div className="relative">
-      <button className="btn-icon relative" onClick={load} title="Notifications">
+      <button className="btn-icon relative" onClick={toggle} title="Notifications">
         <Bell size={18} />
-        {unread > 0 && <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-maroon-500 ring-2 ring-card" />}
+        {unread > 0 && (
+          <span className="absolute -top-1 -right-1 h-4 min-w-4 px-1 grid place-items-center rounded-full bg-maroon-600 text-white text-[10px] font-bold ring-2 ring-card">
+            {unread > 9 ? "9+" : unread}
+          </span>
+        )}
       </button>
       {open && (
         <>
           <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
           <div className="absolute right-0 mt-2 w-80 card p-0 z-40 animate-scale-in overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-line">
-              <span className="font-semibold text-ink">Notifications</span>
-              <span className="chip bg-accent-500/10 text-accent-600 dark:text-accent-400">{unread} new</span>
+              <span className="font-semibold text-ink">Notifications {unread > 0 && <span className="text-xs font-normal text-muted">· {unread} new</span>}</span>
+              {unread > 0 && <button className="text-xs font-medium text-accent-600 dark:text-accent-400 hover:underline" onClick={markAll}>Mark all read</button>}
             </div>
-            <div className="max-h-80 overflow-y-auto divide-y divide-line">
+            <div className="max-h-96 overflow-y-auto divide-y divide-line">
               {items == null && <div className="p-4 text-sm text-muted">Loading…</div>}
-              {items?.length === 0 && <div className="p-8 text-center text-sm text-faint">You're all caught up 🎉</div>}
-              {items?.map((n) => (
-                <div key={n.id} className="px-4 py-3 hover:bg-surface/60">
-                  <div className="flex items-center gap-2">
-                    <span className="h-7 w-7 rounded-lg bg-maroon-500/10 text-maroon-500 grid place-items-center"><Check size={14} /></span>
-                    <div className="min-w-0">
-                      <div className="text-sm font-medium text-ink truncate">{n.title || n.event}</div>
+              {items?.length === 0 && <div className="p-10 text-center text-sm text-faint">You're all caught up 🎉</div>}
+              {items?.map((n) => {
+                const { icon, cls } = notifIcon(n.event);
+                const unreadItem = n.status !== "READ";
+                return (
+                  <button key={n.id} onClick={() => markRead(n)}
+                    className={`w-full text-left px-4 py-3 flex gap-2.5 transition-colors ${unreadItem ? "bg-accent-500/[0.04] hover:bg-accent-500/[0.08]" : "hover:bg-surface/60"}`}>
+                    <span className={`h-8 w-8 rounded-lg grid place-items-center shrink-0 ${cls}`}>{icon}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`text-sm truncate ${unreadItem ? "font-semibold text-ink" : "font-medium text-muted"}`}>{n.title || n.event}</span>
+                        {unreadItem && <span className="h-1.5 w-1.5 rounded-full bg-maroon-500 shrink-0" />}
+                      </div>
                       <div className="text-xs text-muted truncate">{n.body}</div>
+                      <div className="text-[11px] text-faint mt-0.5">{dateTime(n.created_at)}</div>
                     </div>
-                  </div>
-                  <div className="text-[11px] text-faint mt-1 pl-9">{dateTime(n.created_at)}</div>
-                </div>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </>

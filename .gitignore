@@ -13,3 +13,7 @@ Thumbs.db
 
 # Local run artifacts (dev launch logs / pid)
 _run_*
+_commitmsg.txt
+
+# TS incremental build cache
+*.tsbuildinfo

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LayoutGrid, Table2, FileText, ArrowRight } from "lucide-react";
+import { LayoutGrid, Table2, FileText, ArrowRight, Repeat } from "lucide-react";
 import { api, apiError } from "../lib/api";
 import { useFetch } from "../lib/useFetch";
 import { useAuth } from "../lib/auth";
@@ -98,6 +98,11 @@ function OrderDrawer({ orderId, onClose, onChanged }: { orderId: number | null; 
     try { const r = await api.post(`/invoices/from-order/${orderId}`); setMsg(`Invoice ${r.data.invoice_number} generated.`); }
     catch (e) { setMsg(apiError(e)); } finally { setBusy(false); }
   }
+  async function repeatOrder() {
+    setBusy(true); setMsg(null);
+    try { const r = await api.post(`/orders/${orderId}/repeat`); setMsg(`Re-ordered as ${r.data.order_number} — find it at the top of your orders.`); onChanged(); }
+    catch (e) { setMsg(apiError(e)); } finally { setBusy(false); }
+  }
 
   const o = state.data;
   return (
@@ -151,6 +156,8 @@ function OrderDrawer({ orderId, onClose, onChanged }: { orderId: number | null; 
             {can("order:fulfil") && o.status === "DISPATCHED" && <button className="btn-success" disabled={busy} onClick={() => act("deliver")}>Mark Delivered</button>}
             {can("invoice:create") && ["PACKED", "DISPATCHED", "DELIVERED"].includes(o.status) &&
               <button className="btn-ghost" disabled={busy} onClick={genInvoice}><FileText size={16} /> Generate Invoice</button>}
+            {isCustomer &&
+              <button className="btn-primary" disabled={busy} onClick={repeatOrder}><Repeat size={16} /> Repeat Order</button>}
             {isCustomer && ["DRAFT", "PLACED", "APPROVED"].includes(o.status) &&
               <button className="btn-danger" disabled={busy} onClick={() => act("cancel")}>Cancel Order</button>}
           </div>

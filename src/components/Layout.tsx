@@ -4,6 +4,7 @@ import {
   LayoutDashboard, Package, ShoppingCart, ClipboardList, Users, FileText, Wallet,
   Boxes, BarChart3, Settings, ScrollText, Bell, Menu, LogOut, ShoppingBag, UserCog,
   PanelLeftClose, PanelLeft, Sun, Moon, Search, Check, HelpCircle, Calendar, ChevronDown,
+  CreditCard, UserCircle,
 } from "lucide-react";
 import { useAuth } from "../lib/auth";
 import { useTheme } from "../lib/theme";
@@ -11,17 +12,29 @@ import { api } from "../lib/api";
 import { dateTime } from "../lib/format";
 import { GtLogo } from "./GtLogo";
 
-interface NavItem { to: string; label: string; icon: ReactNode; perm?: string; customerOnly?: boolean; }
+interface NavItem { to: string; label: string; icon: ReactNode; perm?: string; }
 
-const NAV: NavItem[] = [
+// Two strictly-separated portals. The customer (retail pharmacy) menu is kept
+// deliberately simple — ordering only; the staff menu is the full ERP.
+const CUSTOMER_NAV: NavItem[] = [
   { to: "/", label: "Dashboard", icon: <LayoutDashboard size={19} /> },
-  { to: "/customers", label: "Customers", icon: <Users size={19} />, perm: "customer:read" },
   { to: "/catalogue", label: "Products", icon: <Package size={19} /> },
+  { to: "/cart", label: "My Cart", icon: <ShoppingCart size={19} /> },
   { to: "/orders", label: "Orders", icon: <ClipboardList size={19} /> },
-  { to: "/cart", label: "Cart", icon: <ShoppingCart size={19} />, customerOnly: true },
+  { to: "/invoices", label: "Invoices", icon: <FileText size={19} /> },
+  { to: "/outstanding", label: "Outstanding", icon: <CreditCard size={19} />, perm: "credit:read" },
+  { to: "/payments", label: "Payments", icon: <Wallet size={19} />, perm: "payment:read" },
+  { to: "/profile", label: "Profile", icon: <UserCircle size={19} /> },
+];
+
+const STAFF_NAV: NavItem[] = [
+  { to: "/", label: "Dashboard", icon: <LayoutDashboard size={19} /> },
+  { to: "/orders", label: "Orders", icon: <ClipboardList size={19} /> },
+  { to: "/catalogue", label: "Products", icon: <Package size={19} />, perm: "product:read" },
   { to: "/inventory", label: "Inventory", icon: <Boxes size={19} />, perm: "inventory:read" },
   { to: "/purchase", label: "Purchase", icon: <ShoppingBag size={19} />, perm: "inventory:read" },
-  { to: "/invoices", label: "Invoices", icon: <FileText size={19} /> },
+  { to: "/customers", label: "Customers", icon: <Users size={19} />, perm: "customer:read" },
+  { to: "/invoices", label: "Invoices", icon: <FileText size={19} />, perm: "invoice:read" },
   { to: "/payments", label: "Payments", icon: <Wallet size={19} />, perm: "payment:read" },
   { to: "/reports", label: "Reports", icon: <BarChart3 size={19} />, perm: "report:read" },
   { to: "/users", label: "Users", icon: <UserCog size={19} />, perm: "user:read" },
@@ -42,11 +55,8 @@ export function Layout({ children }: { children: ReactNode }) {
   useEffect(() => localStorage.setItem("gtm_sidebar", collapsed ? "1" : "0"), [collapsed]);
   useEffect(() => setMobileOpen(false), [location.pathname]);
 
-  const items = NAV.filter((n) => {
-    if (n.perm && !can(n.perm)) return false;
-    if (n.customerOnly && !isCustomer) return false;
-    return true;
-  });
+  // Pick the portal by role, then drop any item the role lacks permission for.
+  const items = (isCustomer ? CUSTOMER_NAV : STAFF_NAV).filter((n) => !n.perm || can(n.perm));
 
   return (
     <div className="min-h-screen flex bg-bg">
@@ -93,7 +103,7 @@ export function Layout({ children }: { children: ReactNode }) {
               <div className="text-sm font-bold text-white">GT Medical Solutions</div>
             </div>
             <div className="text-[11px] text-navy-300 mt-1 leading-snug">
-              Wholesale Healthcare Distribution with Retail Pharmacies
+              {isCustomer ? "Retail Pharmacy Ordering Portal" : "Wholesale Distribution ERP"}
             </div>
           </div>
         )}

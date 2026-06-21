@@ -72,9 +72,11 @@ export default function Login() {
         <div className="absolute inset-0" style={{ backgroundColor: "rgba(15,23,42,0.75)" }} />
         <div className="absolute inset-0 bg-gradient-to-br from-navy-950/90 via-navy-900/50 to-navy-900/80" />
 
-        {/* logo top-left */}
+        {/* logo top-left — white backing so the navy oval ring shows complete on the dark hero */}
         <div className="relative animate-fade-in">
-          <GtLogo width={180} className="drop-shadow-lg" />
+          <div className="inline-block rounded-2xl bg-white/95 px-4 py-2.5 shadow-lg">
+            <GtLogo width={172} />
+          </div>
         </div>
 
         {/* heading + tagline */}

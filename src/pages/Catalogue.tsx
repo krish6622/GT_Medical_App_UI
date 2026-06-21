@@ -87,6 +87,7 @@ export default function Catalogue() {
   const [bump, setBump] = useState(0);            // badge pop animation key
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
   const qtyTimers = useRef<Record<number, number>>({});
+  const cartRef = useRef<CartT | null>(null);     // latest cart, for race-free reconcile
 
   /* ---- admin forms ---- */
   const [formOpen, setFormOpen] = useState(false);
@@ -96,6 +97,7 @@ export default function Catalogue() {
   const canStock = can("batch:create");
 
   useEffect(() => { if (isCustomer) api.get<CartT>("/cart").then((r) => setCart(r.data)).catch(() => {}); }, [isCustomer]);
+  useEffect(() => { cartRef.current = cart; }, [cart]);
 
   function flash(msg: string, ok = true) { setToast({ msg, ok }); setTimeout(() => setToast(null), 2200); }
 
@@ -209,21 +211,51 @@ export default function Catalogue() {
     const next = [id, ...recentProd.filter((x) => x !== id)].slice(0, 12);
     setRecentProd(next); writeList("gtm_recent_products", next.map(String));
   }
-  async function addToCart(p: Product) {
-    try {
-      const { data } = await api.post<CartT>("/cart/items", { product_id: p.id, quantity: 1 });
-      setCart(data); pushRecent(p.id); setBump((b) => b + 1);
-    } catch (e) { flash(apiError(e), false); }
+  /** Optimistic add: flip the card to a stepper instantly, reconcile in the background. */
+  function addToCart(p: Product) {
+    setBump((b) => b + 1);
+    pushRecent(p.id);
+    setCart((c) => {
+      const items = c?.items ?? [];
+      if (items.some((i) => i.product_id === p.id)) return c;   // already in cart
+      const temp: CartItem = {
+        id: -p.id, product_id: p.id, quantity: 1, product_name: p.name,
+        unit_rate: p.wholesale_rate, gst_percent: p.gst_percent,
+        available_stock: p.available_stock, line_total: p.wholesale_rate,
+      };
+      return c
+        ? { ...c, items: [...items, temp] }
+        : { id: null, items: [temp], subtotal: "0", tax_total: "0", grand_total: "0" };
+    });
+    api.post<CartT>("/cart/items", { product_id: p.id, quantity: 1 })
+      .then(({ data }) => {
+        // preserve any quantity the user bumped while the request was in flight
+        const localQty = cartRef.current?.items.find((i) => i.product_id === p.id)?.quantity ?? 1;
+        const serverItem = data.items.find((i) => i.product_id === p.id);
+        if (serverItem && localQty > serverItem.quantity) {
+          setCart({ ...data, items: data.items.map((i) => (i.product_id === p.id ? { ...i, quantity: localQty } : i)) });
+          api.put<CartT>(`/cart/items/${serverItem.id}`, { product_id: p.id, quantity: localQty })
+            .then((r) => setCart(r.data)).catch(() => {});
+        } else {
+          setCart(data);
+        }
+      })
+      .catch((e) => {
+        setCart((c) => (c ? { ...c, items: c.items.filter((i) => i.id !== -p.id) } : c));   // rollback
+        flash(apiError(e), false);
+      });
   }
   /** optimistic local update + debounced authoritative PUT/DELETE */
   function changeQty(item: CartItem, qty: number) {
     setBump((b) => b + 1);
+    const pending = item.id < 0;   // add still in flight — no real id yet
     if (qty <= 0) {
       setCart((c) => (c ? { ...c, items: c.items.filter((i) => i.id !== item.id) } : c));
-      api.delete<CartT>(`/cart/items/${item.id}`).then((r) => setCart(r.data)).catch((e) => flash(apiError(e), false));
+      if (!pending) api.delete<CartT>(`/cart/items/${item.id}`).then((r) => setCart(r.data)).catch((e) => flash(apiError(e), false));
       return;
     }
     setCart((c) => (c ? { ...c, items: c.items.map((i) => (i.id === item.id ? { ...i, quantity: qty } : i)) } : c));
+    if (pending) return;   // reconcile in addToCart() will sync the bumped quantity
     window.clearTimeout(qtyTimers.current[item.id]);
     qtyTimers.current[item.id] = window.setTimeout(() => {
       api.put<CartT>(`/cart/items/${item.id}`, { product_id: item.product_id, quantity: qty })

@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Catalogue from "./pages/Catalogue";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import OrderDetail from "./pages/OrderDetail";
 import Invoices from "./pages/Invoices";
@@ -44,6 +45,7 @@ export default function App() {
 
       {/* Retail-pharmacy portal only */}
       <Route path="/cart" element={<Shell need="customer"><Cart /></Shell>} />
+      <Route path="/checkout" element={<Shell need="customer"><Checkout /></Shell>} />
       <Route path="/outstanding" element={<Shell need="customer"><Outstanding /></Shell>} />
       <Route path="/profile" element={<Shell need="customer"><Profile /></Shell>} />
 

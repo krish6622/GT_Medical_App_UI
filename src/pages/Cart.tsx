@@ -21,16 +21,8 @@ export default function Cart() {
     const r = await api.delete(`/cart/items/${itemId}`);
     state.setData(r.data);
   }
-  async function placeOrder() {
-    setBusy(true); setError(null);
-    try {
-      const r = await api.post("/orders", { notes: "" });
-      navigate(`/orders/${r.data.id}`);
-    } catch (e) {
-      setError(apiError(e));
-    } finally {
-      setBusy(false);
-    }
+  function placeOrder() {
+    navigate("/checkout");
   }
 
   return (
@@ -85,8 +77,8 @@ export default function Cart() {
                 <Row label="GST" value={inr(cart.tax_total)} />
                 <div className="border-t border-line my-3" />
                 <Row label="Grand Total" value={inr(cart.grand_total)} bold />
-                <button className="btn-primary w-full mt-5 py-2.5" onClick={placeOrder} disabled={busy}>
-                  {busy ? "Placing…" : "Place Order"}
+                <button className="btn-primary w-full mt-5 py-2.5" onClick={placeOrder}>
+                  Proceed to Checkout
                 </button>
               </div>
             </div>

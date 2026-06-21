@@ -233,12 +233,9 @@ export default function Catalogue() {
 
   const t = totals(cart?.items ?? []);
 
-  async function checkout() {
-    try {
-      const r = await api.post("/orders", { notes: "" });
-      setCartOpen(false);
-      navigate(`/orders/${r.data.id}`);
-    } catch (e) { flash(apiError(e), false); }
+  function checkout() {
+    setCartOpen(false);
+    navigate("/checkout");
   }
 
   /* ================================================================= */

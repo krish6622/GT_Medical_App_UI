@@ -200,7 +200,17 @@ function notifIcon(event: string) {
   return { icon: <Bell size={14} />, cls: "bg-accent-500/10 text-accent-600 dark:text-accent-400" };
 }
 
+/** Where a notification takes you when clicked (null = stay put). */
+function notifTarget(event: string, isCustomer: boolean): string | null {
+  if (event?.startsWith("ORDER")) return "/orders";
+  if (event?.startsWith("PAYMENT")) return isCustomer ? "/outstanding" : "/payments";
+  if (event === "LOW_STOCK") return "/inventory";
+  return null;
+}
+
 function NotificationsBell() {
+  const { isCustomer } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<Notif[] | null>(null);
 
@@ -212,10 +222,17 @@ function NotificationsBell() {
 
   function toggle() { const next = !open; setOpen(next); if (next) load(); }
 
-  async function markRead(n: Notif) {
+  function markRead(n: Notif) {
     if (n.status === "READ") return;
     setItems((xs) => xs?.map((x) => (x.id === n.id ? { ...x, status: "READ" } : x)) ?? xs);
-    try { await api.post(`/notifications/${n.id}/read`); } catch { /* keep optimistic */ }
+    api.post(`/notifications/${n.id}/read`).catch(() => { /* keep optimistic */ });
+  }
+
+  function openNotif(n: Notif) {
+    markRead(n);
+    const to = notifTarget(n.event, isCustomer);
+    setOpen(false);
+    if (to) navigate(to);
   }
   async function markAll() {
     const ids = (items ?? []).filter((n) => n.status !== "READ").map((n) => n.id);
@@ -250,7 +267,7 @@ function NotificationsBell() {
                 const { icon, cls } = notifIcon(n.event);
                 const unreadItem = n.status !== "READ";
                 return (
-                  <button key={n.id} onClick={() => markRead(n)}
+                  <button key={n.id} onClick={() => openNotif(n)}
                     className={`w-full text-left px-4 py-3 flex gap-2.5 transition-colors ${unreadItem ? "bg-accent-500/[0.04] hover:bg-accent-500/[0.08]" : "hover:bg-surface/60"}`}>
                     <span className={`h-8 w-8 rounded-lg grid place-items-center shrink-0 ${cls}`}>{icon}</span>
                     <div className="min-w-0 flex-1">

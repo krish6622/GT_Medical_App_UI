@@ -10,3 +10,6 @@ Thumbs.db
 .vscode/
 .idea/
 *.log
+
+# Local run artifacts (dev launch logs / pid)
+_run_*
